@@ -18,6 +18,8 @@ public interface BoardMapper {
 
     int insertImages(List<Map<String, String>> imageList);
 
+    Long getBoardTotal();
+
     List<BoardListDTO> getList(PageRequestDTO requestDTO);
 
     @Select("select * from tbl_board b where b.bno = #{bno}")

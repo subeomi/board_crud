@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<h1>Board Read</h1>
+
+<div>
+    <div>
+        <span th:text="${dto.title}"></span>
+        <span th:text="${dto.regDate}"></span>
+    </div>
+    <div style="margin: 50px 0;" th:text="${dto.content}"></div>
+
+    <div style="display: flex;">
+        <a th:href="@{|/board/list|}" style="padding-right:10px;">목록</a>
+        <a th:href="@{|/board/modify/${dto.bno}|}" style="padding-right:10px;">수정</a>
+
+        <form class="actionForm" th:action="|/board/delete/${dto.bno}|" th:method="post">
+            <a class="delSubmit" style="cursor:pointer;">삭제</a>
+        </form>
+    </div>
+</div>
+
+<script>
+
+        const actionForm = document.querySelector(".actionForm");
+        const delSubmit = document.querySelector(".delSubmit");
+
+
+        delSubmit.addEventListener("click", e =>{
+
+            actionForm.submit();
+
+        }, false);
+
+</script>
+</body>
+</html>

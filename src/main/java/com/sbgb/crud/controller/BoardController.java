@@ -19,6 +19,12 @@ public class BoardController {
 
     private final BoardService service;
 
+    @GetMapping("list")
+    public void list(PageRequestDTO requestDTO, Model model){
+
+        model.addAttribute("res", service.list(requestDTO));
+    }
+
     @GetMapping("read/{bno}")
     public String getOne(
             @PathVariable("bno") Long bno,
@@ -50,19 +56,33 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
-    @PutMapping("modify/{bno}")
+    @GetMapping("modify/{bno}")
+    public String modifyGet(
+            @PathVariable("bno") Long bno,
+            PageRequestDTO requestDTO,
+            Model model
+    ) {
+
+        BoardDTO dto = service.getOne(bno);
+        model.addAttribute("dto", dto);
+        log.info("modify get... bno: " + bno);
+
+        return "/board/modify";
+    }
+
+    @PostMapping("modify/{bno}")
     public String modify(@PathVariable("bno") Long bno, BoardDTO dto) {
 
-        log.info("put... modify bno: " + bno);
+        log.info("post... modify bno: " + bno);
         service.modify(dto);
 
         return "redirect:/board/read/" + bno;
     }
 
-    @DeleteMapping("delete/{bno}")
+    @PostMapping("delete/{bno}")
     public String delete(@PathVariable("bno") Long bno) {
 
-        log.info("delete... delete bno: " + bno);
+        log.info("post... delete bno: " + bno);
         service.delete(bno);
 
         return "redirect:/board/list";

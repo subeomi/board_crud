@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<h1>Board Modify</h1>
+
+<form class="actionForm" th:action="|/board/modify/${dto.bno}|" th:method="post">
+
+    <p>
+        <input type="text" name="title" th:value="${dto.title}">
+    </p>
+    <p>
+        <textarea name="content" th:text="${dto.content}" cols="30" rows="12" style="resize: none;"></textarea>
+    </p>
+    <p>
+        <a class="modBtn">수정</a>
+        <button>취소</button>
+    <div class="uploadHidden">
+        <!-- 여기에 input type="hidden" -->
+    </div>
+    </p>
+</form>
+
+<input class="uploadInput" type="file" name="upload" multiple>
+<button class="uploadBtn">UPLOAD</button>
+
+<div class="uploadDiv">
+    <ul class="uploadUL">
+
+    </ul>
+</div>
+
+<style>
+        .uploadUL {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .uploadUL li {
+            margin: 1em;
+            background-color: deepskyblue;
+            padding: 1em;
+            border: 1px solid darkgray;
+            border-radius: 0.5em;
+        }
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script th:inline="javascript">
+        // step 2.5-----------------------------
+        // 등록 과정과 유사 - 첨부파일 수정, 상품 데이터 수정
+        // POST 방식으로 submit
+        const bno = [[${dto.bno}]]
+
+        const uploadUL = document.querySelector(".uploadUL")
+        const uploadBtn = document.querySelector(".uploadBtn")
+        const uploadInput = document.querySelector(".uploadInput")
+
+        const modBtn = document.querySelector(".modBtn")
+        const actionForm = document.querySelector(".actionForm")
+        const uploadHidden = document.querySelector(".uploadHidden")
+
+
+        modBtn.addEventListener("click", e =>{
+
+            e.preventDefault()
+            e.stopPropagation()
+
+            const liArr = uploadUL.querySelectorAll("li")
+
+<!--            if(!liArr || liArr.length === 0){-->
+<!--                alert("넣으라규")-->
+<!--                return-->
+<!--            }-->
+
+            let str = ""
+            for(let liObj of liArr){
+                console.log(liObj)
+                const uuid = liObj.getAttribute("data-uuid")
+                const fileName = liObj.getAttribute("data-filename")
+                console.log(uuid, fileName)
+                console.log("--------------------------------------")
+                str += `<input type='hidden' name='fileNames' value='${uuid}_${fileName}'>`
+            }
+
+            uploadHidden.innerHTML += str
+
+            actionForm.submit()
+
+        }, false)
+
+
+        const loadImages= () => {
+            axios.get(`http://localhost:8080/product/images/${pno}`)
+            .then(res=>{
+                const arr = res.data
+                console.log(arr)
+
+                const objArr= arr.map(str => {
+                    const uuid = str.substring(0,36)
+                    const fileName = str.substring(37)
+                    const link = "s_"+str
+                    return {uuid: uuid,fileName: fileName,link:link}
+
+                })
+
+                console.log(objArr)
+                showProducts(objArr)
+            })
+        }
+
+        const showProducts = (arr) => {
+
+        let str = ""
+
+        for(const uploadFile of arr){
+            const {fileName, link, uuid} = uploadFile
+
+            str += `
+            <li data-uuid='${uuid}' data-fileName='${fileName}'>
+                <div>
+                    <a href='http://localhost/${uuid}_${fileName}' target="_blank">
+                    <img src='http://localhost/${link}'/>
+                    </a>
+                    <p>${fileName} <button onclick="javascript:removeFile(event, '${uuid}', '${fileName}')">x</button></p>
+                </div>
+            </li>`
+        }
+
+        uploadUL.innerHTML += str
+
+        }
+
+
+        const removeFile = (e, uuid, fileName) => {
+            e.stopPropagation()
+            e.preventDefault()
+
+            alert("remove file")
+
+            // 삭제버튼 상위의 li를 찾기
+            const liObj = e.target.closest("li")
+            console.log(liObj)
+
+
+            axios.delete(`http://localhost:8080/removeFile/${uuid}_${fileName}`)
+
+            // 해당 엘리먼트 삭제
+            liObj.remove()
+        }
+
+
+        uploadBtn.addEventListener("click", e => {
+            e.preventDefault()
+            e.stopPropagation()
+
+            console.dir(uploadInput.files)
+
+            if(!uploadInput.files || uploadInput.files.length === 0){
+                alert('사진 넣어야겠지?');
+                return
+            }
+
+            formData = new FormData()
+
+            for(let i = 0; i < uploadInput.files.length; i++){
+                formData.append("files", uploadInput.files[i])
+            }
+
+            console.dir(formData)
+
+            const header = {headers: {"Content-Type": "multipart/form-data"}}
+
+            axios.post('http://localhost:8080/upload', formData, header)
+            .then(res => {
+                const result = res.data
+                console.log(result)
+                showProducts(result)
+            })
+
+        }, false)
+
+        loadImages()
+
+
+
+</script>
+</body>
+</html>

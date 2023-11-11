@@ -44,7 +44,7 @@ public class BoardMapperTests {
     @Transactional
     @Test
     public void testInsert() {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 152; i++) {
             BoardDTO dto = BoardDTO.builder()
                     .title("테스트 제목 " + i)
                     .writer("테스터")

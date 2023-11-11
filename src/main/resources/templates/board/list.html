@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<div>
+    <ul>
+        <li th:if="${res != null and res.dtoList != null}" th:each="dto : ${res.dtoList}">
+            <span th:text="${dto.bno}"></span>
+            <a th:href="@{|/board/read/${dto.bno}|(page=${res.requestDTO.page}, size=${res.requestDTO.size})}"
+               th:text="${dto.title}"></a>
+            <span th:text="${dto.writer}"></span>
+            <span th:text="${#strings.substring(dto.regDate, 0, 10)}"></span>
+        </li>
+    </ul>
+
+
+    <ul style="display: flex; list-style:none;">
+        <li th:if="${res.prev}">
+            <a th:href="@{|/board/list?page=${res.start - 1}&size=${res.size}|}"
+               style="margin-right: 5px;"
+            >&lt;&lt; 이전</a>
+        </li>
+        <li th:each="pageNum : ${res.pageNums}">
+            <a th:href="@{|/board/list?page=${pageNum}&size=${res.size}|}"
+               th:text="${pageNum}"
+               style="margin-right: 5px;"></a>
+        </li>
+        <li th:if="${res.next}">
+            <a th:href="@{|/board/list?page=${res.end + 1}&size=${res.size}|}">다음 &gt;&gt;</a>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>

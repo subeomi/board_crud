@@ -25,8 +25,9 @@ public class BoardServiceImpl implements BoardService{
     public PageResponseDTO<BoardListDTO> list(PageRequestDTO requestDTO) {
 
         List<BoardListDTO> list = mapper.getList(requestDTO);
+        Long total = mapper.getBoardTotal();
 
-        return null;
+        return new PageResponseDTO<>(list, total, requestDTO);
     }
 
     @Override
@@ -86,27 +87,32 @@ public class BoardServiceImpl implements BoardService{
         log.info("====================");
         log.info(dto);
 
-        // 기존 이미지 삭제
-        mapper.deleteImages(dto.getBno());
+        if(dto.getFileNames() != null) {
 
-        // 새 이미지 추가
-        List<String> fileNames = dto.getFileNames();
+            // 기존 이미지 삭제
+            mapper.deleteImages(dto.getBno());
 
-        Long bno = dto.getBno();
+            // 새 이미지 추가
+            List<String> fileNames = dto.getFileNames();
 
-        AtomicInteger index = new AtomicInteger();
+            Long bno = dto.getBno();
 
-        List<Map<String, String>> list = fileNames.stream().map(str -> {
-            String uuid = str.substring(0, 36);
-            String fileName = str.substring(37);
+            AtomicInteger index = new AtomicInteger();
 
-            return Map.of("uuid", uuid, "fileName", fileName, "bno", "" + bno, "ord", "" + index.getAndIncrement());
-        }).collect(Collectors.toList());
+            List<Map<String, String>> list = fileNames.stream().map(str -> {
+                String uuid = str.substring(0, 36);
+                String fileName = str.substring(37);
 
-        log.info(list);
+                return Map.of("uuid", uuid, "fileName", fileName, "bno", "" + bno, "ord", "" + index.getAndIncrement());
+            }).collect(Collectors.toList());
 
-        mapper.insertImages(list);
-        log.info("====================");
+            log.info(list);
+
+            mapper.insertImages(list);
+            log.info("====================");
+        } else {
+            log.info("modify... no image");
+        }
 
     }
 

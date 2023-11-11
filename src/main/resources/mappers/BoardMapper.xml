@@ -5,6 +5,13 @@
 
 <mapper namespace="com.sbgb.crud.mappers.BoardMapper">
 
+    <select id="getBoardTotal" resultType="long">
+        select COUNT(*)
+        from tbl_board b
+        left outer join tbl_board_image i on i.bno = b.bno
+        where (i.ord = 0 OR i.ord IS NULL) AND b.status = 0
+    </select>
+
     <select id="getList" resultType="BoardListDTO">
         select
         b.bno, b.title, b.writer, b.regDate, b.status,
