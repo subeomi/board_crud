@@ -15,7 +15,7 @@ public class UploadResultDTO {
     private String fileName;
     private boolean img;
 
-    public String getList(){
+    public String getLink(){
         if (img) {
             return "s_" + uuid + "_" + fileName;
         } else {

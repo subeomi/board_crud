@@ -19,8 +19,11 @@ public class BoardController {
 
     private final BoardService service;
 
+    // URL파라미터로 들어가는 page, size, type, keyword는 매개변수 requestDTO로 들어감.
     @GetMapping("list")
     public void list(PageRequestDTO requestDTO, Model model){
+
+        log.info("page request... " + requestDTO);
 
         model.addAttribute("res", service.list(requestDTO));
     }
@@ -47,10 +50,15 @@ public class BoardController {
         return service.getOneImage(bno);
     }
 
+    @GetMapping("register")
+    public void register(){
+        log.info("get... register");
+    }
+
     @PostMapping("register")
     public String register(BoardDTO dto) {
 
-        log.info("post... insert");
+        log.info("post... register");
         service.register(dto);
 
         return "redirect:/board/list";

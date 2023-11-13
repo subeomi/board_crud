@@ -10,6 +10,22 @@
         from tbl_board b
         left outer join tbl_board_image i on i.bno = b.bno
         where (i.ord = 0 OR i.ord IS NULL) AND b.status = 0
+        <if test="type != null and keyword != null">
+            <if test='type == "tc"'>
+                and (b.title like concat('%', #{keyword}, '%')
+                or b.content like concat('%', #{keyword}, '%'))
+            </if>
+            <if test='type == "t"'>
+                and b.title like concat('%', #{keyword}, '%')
+            </if>
+            <if test='type == "c"'>
+                and b.content like concat('%', #{keyword}, '%')
+            </if>
+            <if test='type == "w"'>
+                and b.writer like concat('%', #{keyword}, '%')
+            </if>
+        </if>
+
     </select>
 
     <select id="getList" resultType="BoardListDTO">
@@ -19,6 +35,21 @@
         from tbl_board b
         left outer join tbl_board_image i on i.bno = b.bno
         where (i.ord = 0 or i.ord is null) and b.status = 0
+        <if test="type != null and keyword != null">
+            <if test='type == "tc"'>
+                and (b.title like concat('%', #{keyword}, '%')
+                or b.content like concat('%', #{keyword}, '%'))
+            </if>
+            <if test='type == "t"'>
+                and b.title like concat('%', #{keyword}, '%')
+            </if>
+            <if test='type == "c"'>
+                and b.content like concat('%', #{keyword}, '%')
+            </if>
+            <if test='type == "w"'>
+                and b.writer like concat('%', #{keyword}, '%')
+            </if>
+        </if>
         order by b.bno desc
         limit #{skip}, #{size}
     </select>

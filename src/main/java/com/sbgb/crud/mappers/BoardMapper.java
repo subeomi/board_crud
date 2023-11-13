@@ -18,7 +18,7 @@ public interface BoardMapper {
 
     int insertImages(List<Map<String, String>> imageList);
 
-    Long getBoardTotal();
+    Long getBoardTotal(PageRequestDTO requestDTO);
 
     List<BoardListDTO> getList(PageRequestDTO requestDTO);
 

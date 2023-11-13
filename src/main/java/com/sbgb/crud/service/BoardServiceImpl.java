@@ -1,9 +1,6 @@
 package com.sbgb.crud.service;
 
-import com.sbgb.crud.dto.BoardDTO;
-import com.sbgb.crud.dto.BoardListDTO;
-import com.sbgb.crud.dto.PageRequestDTO;
-import com.sbgb.crud.dto.PageResponseDTO;
+import com.sbgb.crud.dto.*;
 import com.sbgb.crud.mappers.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,34 +22,41 @@ public class BoardServiceImpl implements BoardService{
     public PageResponseDTO<BoardListDTO> list(PageRequestDTO requestDTO) {
 
         List<BoardListDTO> list = mapper.getList(requestDTO);
-        Long total = mapper.getBoardTotal();
+        Long total = mapper.getBoardTotal(requestDTO);
 
         return new PageResponseDTO<>(list, total, requestDTO);
     }
 
     @Override
     public void register(BoardDTO dto) {
-
-        List<String> fileNames = dto.getFileNames();
+        
+        if(dto.getWriter() == null) {
+            dto.setWriter("테스터");
+        }
 
         mapper.insertBoard(dto);
         log.info("====================");
         log.info(dto);
 
-        Long bno = dto.getBno();
+        if(dto.getFileNames() != null){
 
-        AtomicInteger index = new AtomicInteger();
+            List<String> fileNames = dto.getFileNames();
 
-        List<Map<String, String>> list = fileNames.stream().map(str -> {
-            String uuid = str.substring(0, 36);
-            String fileName = str.substring(37);
+            Long bno = dto.getBno();
 
-            return Map.of("uuid", uuid, "fileName", fileName, "bno", "" + bno, "ord", "" + index.getAndIncrement());
-        }).collect(Collectors.toList());
+            AtomicInteger index = new AtomicInteger();
 
-        log.info(list);
+            List<Map<String, String>> list = fileNames.stream().map(str -> {
+                String uuid = str.substring(0, 36);
+                String fileName = str.substring(37);
 
-        mapper.insertImages(list);
+                return Map.of("uuid", uuid, "fileName", fileName, "bno", "" + bno, "ord", "" + index.getAndIncrement());
+            }).collect(Collectors.toList());
+
+            log.info(list);
+
+            mapper.insertImages(list);
+        }
 
         log.info("====================");
     }
@@ -61,6 +65,7 @@ public class BoardServiceImpl implements BoardService{
     public BoardDTO getOne(Long bno) {
 
         BoardDTO dto = mapper.selectOne(bno);
+        dto.setFileNames(mapper.selectImages(bno));
 
         log.info("====================");
         log.info(dto);

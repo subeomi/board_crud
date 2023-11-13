@@ -13,7 +13,14 @@
         <span th:text="${dto.title}"></span>
         <span th:text="${dto.regDate}"></span>
     </div>
-    <div style="margin: 50px 0;" th:text="${dto.content}"></div>
+    <div class="contents">
+        <div th:if="dto.fileNames != null">
+            <div th:each="image : ${dto.fileNames}">
+                <img th:src="@{'http://localhost/' + ${image}}" />
+            </div>
+        </div>
+        <div style="margin: 50px 0;" th:text="${dto.content}"></div>
+    </div>
 
     <div style="display: flex;">
         <a th:href="@{|/board/list|}" style="padding-right:10px;">목록</a>
